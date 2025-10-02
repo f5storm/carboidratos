@@ -625,7 +625,7 @@
             font-weight: 600;
         }
 
-        #quiz-start-btn, #restart-quiz-btn {
+        #quiz-start-btn, #restart-quiz-btn, #reset-progress-btn {
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -637,6 +637,7 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
         }
         
         #quiz-start-btn {
@@ -644,10 +645,15 @@
         }
         #restart-quiz-btn {
             color: var(--dissacarideo-color);
-             margin-top: 2rem;
         }
 
-        #quiz-start-btn:hover, #restart-quiz-btn:hover {
+        #reset-progress-btn {
+            color: #ef4444; /* red-500 */
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        #quiz-start-btn:hover, #restart-quiz-btn:hover, #reset-progress-btn:hover {
             transform: scale(1.05);
             background: rgba(255, 255, 255, 0.6);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
@@ -978,6 +984,7 @@
                  <button id="restart-quiz-btn">Novo Quiz</button>
             </div>
             <button id="quiz-start-btn">Começar Quiz</button>
+            <button id="reset-progress-btn">Zerar Progresso</button>
         </div>
     </section>
 
@@ -1248,6 +1255,7 @@
             const progressBarFill = document.getElementById('progress-bar-fill');
             const progressLabel = document.getElementById('progress-label');
             const timerDisplay = document.getElementById('timer-display');
+            const resetProgressBtn = document.getElementById('reset-progress-btn');
             
             let currentQuestionIndex = 0;
             let score = 0;
@@ -1267,6 +1275,14 @@
 
             function saveProgress() {
                 localStorage.setItem('carbquiz_correctlyAnsweredIds', JSON.stringify(correctlyAnsweredIds));
+            }
+            
+            function resetProgress() {
+                localStorage.removeItem('carbquiz_correctlyAnsweredIds');
+                correctlyAnsweredIds = [];
+                updateProgressBar();
+                resultsContainer.classList.add('hidden');
+                startBtn.classList.remove('hidden');
             }
 
             function updateProgressBar() {
@@ -1470,6 +1486,7 @@
 
             startBtn.addEventListener('click', startQuiz);
             restartBtn.addEventListener('click', startQuiz);
+            resetProgressBtn.addEventListener('click', resetProgress);
 
             loadProgress();
         });
