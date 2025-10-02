@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carboidratos: Bioquímica Interativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* == Theme Colors for Carbohydrates == */
+            --monossacarideo-color: #22c55e;      /* Green for Monosaccharides */
+            --dissacarideo-color: #f97316;     /* Orange for Disaccharides */
+            --polissacarideo-color: #3b82f6;         /* Blue for Polysaccharides */
+
+            /* Glow/Highlight Colors for light theme */
+            --monossacarideo-glow: rgba(34, 197, 94, 0.2);
+            --dissacarideo-glow: rgba(249, 115, 22, 0.2);
+            --polissacarideo-glow: rgba(59, 130, 246, 0.2);
+            
+            /* Theme Border Colors for light theme */
+            --monossacarideo-border: rgba(34, 197, 94, 0.4);
+            --dissacarideo-border: rgba(249, 115, 22, 0.4);
+            --polissacarideo-border: rgba(59, 130, 246, 0.4);
+
+            /* Light Theme Palette */
+            --bg-main: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-color: var(--bg-main);
+            transition: background-color 0.5s ease-in-out; /* For quiz feedback */
+        }
+        
+        /* == Background color flash for Quiz == */
+        body.correct-bg { background-color: #dcfce7; }
+        body.incorrect-bg { background-color: #fee2e2; }
+
+        /* Animated background shapes */
+        .background-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -2;
+        }
+        .light-bubble {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.15; 
+            animation: moveBubble 35s infinite alternate;
+        }
+        .light-bubble.b1 { width: 45vw; height: 45vw; top: 5%; left: -10%; background: var(--polissacarideo-color); animation-duration: 40s; }
+        .light-bubble.b2 { width: 45vw; height: 45vw; top: 40%; left: 70%; background: var(--monossacarideo-color); animation-duration: 35s; }
+        .light-bubble.b3 { width: 50vw; height: 50vw; top: 60%; left: 10%; background: var(--dissacarideo-color); animation-duration: 45s; }
+
+        @keyframes moveBubble {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(15vw, -20vh) scale(1.2); }
+        }
+        
+        /* Dynamic background glows for transitions */
+        .dynamic-bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 150vmax;
+            height: 150vmax;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -1;
+        }
+        #bg-definicao-carboidratos { background-color: var(--polissacarideo-color); }
+        #bg-monossacarideos { background-color: var(--monossacarideo-color); }
+        #bg-di-e-polissacarideos { background-color: var(--dissacarideo-color); }
+
+        .section-container {
+            width: 100%;
+            padding: 7rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        
+        #hero { 
+            min-height: 90vh; 
+            padding-top: 2rem; 
+            padding-bottom: 2rem;
+        }
+        #hero h1 { 
+            font-size: clamp(2.8rem, 7vw, 5rem); 
+            font-weight: 800; 
+            letter-spacing: -0.05em; 
+            text-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        #hero p { 
+            font-size: clamp(1.1rem, 2.5vw, 1.35rem); 
+            max-width: 650px; 
+            color: var(--text-secondary);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-header-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .section-header-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .section-header-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            z-index: 1;
+        }
+        .section-header-card > * {
+             position: relative;
+             z-index: 2;
+        }
+        .section-header-card .section-title {
+            margin-bottom: 1rem;
+        }
+        #hero .section-header-card { margin-bottom: 0; } 
+
+        .section-title { font-size: clamp(2.2rem, 5.5vw, 4rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary); position: relative; }
+        .section-subtitle { 
+            font-size: clamp(1rem, 2vw, 1.2rem); 
+            max-width: 700px; 
+            color: var(--text-secondary); 
+            margin-bottom: 0;
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        .topics-grid {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .topic-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .topic-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .topic-card:nth-child(1) { transition-delay: 0.05s; }
+        .topic-card:nth-child(2) { transition-delay: 0.1s; }
+        .topic-card:nth-child(3) { transition-delay: 0.15s; }
+        .topic-card:nth-child(4) { transition-delay: 0.2s; }
+        .topic-card:nth-child(5) { transition-delay: 0.25s; }
+
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            transition: box-shadow 0.4s ease;
+            z-index: 1;
+        }
+        
+        .topic-card:hover::before { 
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .topic-card > div {
+            position: relative;
+            z-index: 2;
+        }
+
+        .topic-card:hover { 
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3); 
+        }
+        
+        .topic-card .summary { 
+            color: var(--text-primary);
+            text-shadow: none;
+            font-size: 1.125rem; 
+            font-weight: 600; 
+            padding: 1.5rem; 
+            cursor: pointer; 
+            outline: none; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .topic-card .summary::after { 
+            content: '+'; 
+            font-size: 1.5rem; 
+            font-weight: 400; 
+            color: var(--text-secondary);
+            text-shadow: none;
+            transition: transform 0.3s ease-in-out; 
+        }
+        .topic-card.is-open > .summary::after { transform: rotate(45deg); }
+        .topic-card.is-open > .summary { 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+        
+        .topic-content-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .topic-content { 
+            padding: 1.5rem; 
+            font-size: 0.95rem; 
+            color: var(--text-secondary);
+            text-shadow: none;
+        }
+
+        .image-bubble {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1.25rem;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .image-bubble:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .image-bubble img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            display: block;
+        }
+        
+        #definicao-carboidratos .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--polissacarideo-border);
+        }
+        #monossacarideos .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--monossacarideo-border);
+        }
+        #di-e-polissacarideos .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--dissacarideo-border);
+        }
+        
+        #definicao-carboidratos .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(59, 130, 246, 0.6);
+        }
+        #monossacarideos .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(34, 197, 94, 0.6);
+        }
+        #di-e-polissacarideos .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(249, 115, 22, 0.6);
+        }
+        
+        .term { 
+            text-decoration: none; 
+            cursor: pointer; 
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 0.6rem;
+            transition: all 0.2s ease-in-out;
+            text-shadow: none;
+        }
+        #definicao-carboidratos .term { background-color: var(--polissacarideo-glow); color: #1d4ed8; }
+        #monossacarideos .term { background-color: var(--monossacarideo-glow); color: #15803d; }
+        #di-e-polissacarideos .term { background-color: var(--dissacarideo-glow); color: #c2410c; }
+        .term:hover { 
+            filter: brightness(1.15); 
+        }
+        
+        .chemical-formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal Styling */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(248, 250, 252, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+            z-index: 1000;
+        }
+        #modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.4s ease;
+        }
+        
+        #modal-content {
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            border-radius: 2rem;
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.95);
+            transition: transform 0.4s ease;
+            overflow: hidden; 
+        }
+        
+        #modal-content.image-modal {
+             max-width: 650px;
+        }
+        
+        #modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            z-index: 1;
+        }
+
+        #modal-overlay.visible #modal-content { 
+            transform: scale(1);
+        }
+        
+        #modal-content.theme-definicao-carboidratos { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--polissacarideo-border); }
+        #modal-content.theme-monossacarideos { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--monossacarideo-border); }
+        #modal-content.theme-di-e-polissacarideos { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--dissacarideo-border); }
+        
+        #modal-header, #modal-description {
+            position: relative;
+            z-index: 2;
+        }
+
+        #modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            text-align: center;
+            padding: 1.5rem 3.5rem;
+        }
+        
+        #modal-title { 
+            font-size: 1.75rem; 
+            font-weight: 700; 
+            text-shadow: none;
+        }
+        #modal-header.theme-definicao-carboidratos #modal-title { color: var(--polissacarideo-color); }
+        #modal-header.theme-monossacarideos #modal-title { color: var(--monossacarideo-color); }
+        #modal-header.theme-di-e-polissacarideos #modal-title { color: var(--dissacarideo-color); }
+        
+        #modal-description { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; padding: 1.5rem 2rem 2rem 2rem; }
+        
+        #modal-image-container {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        #modal-image-container img {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            border-radius: 1rem;
+        }
+
+        #modal-close-btn {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 50%;
+            width: 2.5rem; height: 2.5rem;
+            cursor: pointer; 
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            z-index: 3;
+        }
+        #modal-close-btn:hover { background: rgba(0,0,0,0.1); transform: scale(1.1); }
+        
+        .footer-signature { text-align: center; padding: 4rem 1rem; background-color: transparent; color: #94a3b8; }
+        ul { list-style-position: inside; padding-left: 0.5rem;}
+        li { margin-bottom: 0.5rem; }
+
+        /* == Quiz Styles == */
+        #quiz-section {
+             background: rgba(255, 255, 255, 0.2);
+             backdrop-filter: blur(15px);
+             -webkit-backdrop-filter: blur(15px);
+             border-top: 1px solid rgba(255, 255, 255, 0.3);
+             padding-bottom: 4rem;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 9999px;
+            padding: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        #progress-bar-fill {
+            height: 1.5rem;
+            background: linear-gradient(90deg, #4ade80, #3b82f6);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+        #progress-label {
+            text-align: center;
+            margin-top: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        #question-counter-display {
+            position: absolute;
+            top: 2.5rem;
+            right: 2.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        #question-counter-display.facil-bg {
+            background-color: #22c55e; /* green-500 */
+        }
+        #question-counter-display.media-bg {
+            background-color: #f59e0b; /* amber-500 */
+        }
+        #question-counter-display.dificil-bg {
+            background-color: #ef4444; /* red-500 */
+        }
+        
+        #timer-display {
+            position: absolute;
+            top: 2.5rem;
+            left: 2.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.4);
+            border: 3px solid var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        #timer-display.warning {
+            border-color: #f59e0b;
+            color: #b45309;
+            transform: scale(1.1);
+        }
+        #timer-display.danger {
+            border-color: #ef4444;
+            color: #991b1b;
+            transform: scale(1.1);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        #modal-description { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; padding: 0 2rem 2rem 2rem; }
+        
+        #quiz-question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            padding: 0 96px; /* Space for timer and difficulty */
+            text-align: center;
+        }
+
+        #quiz-options {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            background-color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+            will-change: transform, box-shadow;
+        }
+
+        .quiz-option:hover {
+            transform: translateY(-3px);
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quiz-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .quiz-option.correct-answer {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #15803d;
+            font-weight: 600;
+        }
+        
+        .quiz-option.incorrect-answer {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            font-weight: 600;
+        }
+
+        #quiz-start-btn, #restart-quiz-btn {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #quiz-start-btn {
+            color: var(--text-primary);
+        }
+        #restart-quiz-btn {
+            color: var(--dissacarideo-color);
+             margin-top: 2rem;
+        }
+
+        #quiz-start-btn:hover, #restart-quiz-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        #quiz-results {
+             text-align: center;
+        }
+        
+        #quiz-results h3 {
+             font-size: 2rem;
+             font-weight: 700;
+             margin-bottom: 1.5rem;
+        }
+
+        #quiz-percentage {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .stat-correct, .stat-incorrect {
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .stat-correct {
+            background-color: rgba(34, 197, 94, 0.25); 
+        }
+
+        .stat-incorrect {
+            background-color: rgba(239, 68, 68, 0.25);
+        }
+        
+        #missed-topics-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .missed-topic-bubble {
+            background-color: #f1f5f9;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .missed-topic-bubble:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .missed-topic-bubble.visited-topic {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="light-bubble b1"></div>
+        <div class="light-bubble b2"></div>
+        <div class="light-bubble b3"></div>
+        <div class="dynamic-bg-glow" id="bg-definicao-carboidratos"></div>
+        <div class="dynamic-bg-glow" id="bg-monossacarideos"></div>
+        <div class="dynamic-bg-glow" id="bg-di-e-polissacarideos"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="section-container">
+        <div class="section-header-card">
+            <h1>Carboidratos</h1>
+            <p class="mt-4">Uma jornada interativa pela bioquímica dos açúcares, explorando sua estrutura, função e importância fundamental para a vida.</p>
+        </div>
+    </section>
+    
+    <!-- Definition Section -->
+    <section id="definicao-carboidratos" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">O Que São Carboidratos?</h2>
+            <p class="section-subtitle">As biomoléculas mais abundantes da natureza. Eles são a principal fonte de energia para os seres vivos e desempenham papéis estruturais cruciais.</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-definicao-basica">
+                <div class="summary">Definição e Estrutura Básica</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>Quimicamente, são definidos como <span class="term" data-description="Moléculas que possuem múltiplos grupos hidroxila (-OH) e um grupo aldeído (-CHO) ou cetona (C=O).">poliidroxialdeídos ou poliidroxicetonas</span>.</li>
+                            <li>Sua fórmula empírica geral é (CH₂O)n, o que lhes deu o nome "hidratos de carbono".</li>
+                            <li>A estrutura consiste em uma cadeia de carbono com um grupo carbonila (C=O) e vários grupos hidroxila (-OH).</li>
+                            <li>O sufixo característico para carboidratos é <span class="term" data-description="Exemplos: Glicose, Frutose, Sacarose, Lactose."> -ose</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-funcoes-biologicas">
+                <div class="summary">Funções Biológicas</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li><strong>Fonte de Energia:</strong> São a principal fonte de energia metabólica e são armazenados para uso futuro (ex: glicogênio em animais, amido em plantas).</li>
+                            <li><strong>Estrutural:</strong> Formam componentes essenciais como a <span class="term" data-description="Um polissacarídeo estrutural que compõe a parede celular das plantas, dando-lhes rigidez.">celulose</span> nas plantas e a quitina em fungos.</li>
+                             <li><strong>Componentes de Ácidos Nucleicos:</strong> A ribose e a desoxirribose são açúcares que formam o esqueleto do RNA e DNA, respectivamente.</li>
+                            <li><strong>Sinalização Celular:</strong> Ligam-se a proteínas e lipídios para formar <span class="term" data-description="Moléculas compostas por carboidratos ligados a proteínas (glicoproteínas) ou lipídios (glicolipídios), que atuam como marcadores na superfície celular para reconhecimento e comunicação.">glicoconjugados</span>, importantes para o reconhecimento celular.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-classificacao">
+                <div class="summary">Classificação dos Carboidratos</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        Eles são classificados pelo número de unidades de açúcar que contêm:
+                        <ul>
+                            <li><span class="term" data-description="A unidade mais simples de um carboidrato, também chamada de 'açúcar simples'. Exemplos incluem glicose e frutose.">Monossacarídeos:</span> Uma única unidade de açúcar.</li>
+                            <li><span class="term" data-description="Formados por duas a cerca de 20 unidades de monossacarídeos ligadas. Os dissacarídeos (duas unidades) são os mais comuns, como a sacarose (açúcar de mesa).">Oligossacarídeos:</span> Cadeias curtas de monossacarídeos.</li>
+                            <li><span class="term" data-description="Polímeros longos com centenas ou milhares de unidades de monossacarídeos. Podem ser lineares (celulose) ou ramificados (glicogênio).">Polissacarídeos:</span> Cadeias muito longas (polímeros).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monosaccharides Section -->
+    <section id="monossacarideos" class="section-container">
+         <div class="section-header-card">
+            <h2 class="section-title">Monossacarídeos</h2>
+            <p class="section-subtitle">Os blocos de construção fundamentais de todos os carboidratos. São açúcares simples que não podem ser quebrados em unidades menores.</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-aldose-cetose">
+                <div class="summary">Aldoses e Cetoses</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        A classificação primária dos monossacarídeos baseia-se na posição do grupo carbonila (C=O):
+                        <ul>
+                            <li><span class="term" data-description="Um monossacarídeo com o grupo carbonila (C=O) localizado na extremidade da cadeia de carbono, formando um grupo aldeído. A glicose é o exemplo mais famoso.">Aldose:</span> O C=O está na extremidade (C1).</li>
+                            <li><span class="term" data-description="Um monossacarídeo com o grupo carbonila (C=O) em qualquer outra posição que não seja a extremidade, formando um grupo cetona. A frutose é um exemplo comum.">Cetose:</span> O C=O está em uma posição interna.</li>
+                        </ul>
+                        <div class="image-bubble" data-img-svg="false" data-img-description="Comparação entre uma aldotriose (Gliceraldeído) e uma cetotriose (Diidroxiacetona). A diferença chave é a posição do grupo carbonila (C=O): na extremidade para a aldose (Carbono 1) e no meio da cadeia para a cetose (Carbono 2).">
+                           <img src="aldose-cetose .jpg" alt="Comparação entre Aldose e Cetose" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-linear-ciclica">
+                <div class="summary">Forma Linear vs. Cíclica</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>Monossacarídeos com 4 ou mais carbonos, como a glicose, existem em um equilíbrio entre a forma linear (cadeia aberta) e a forma cíclica (anel).</li>
+                            <li>A forma cíclica é energeticamente mais estável e predominante em solução aquosa.</li>
+                            <li>A ciclização ocorre quando o grupo carbonila reage com um grupo hidroxila da mesma molécula. Em aldoses, forma-se um <span class="term" data-description="Estrutura em anel formada pela reação intramolecular de um aldeído com um álcool.">hemiacetal</span>.</li>
+                        </ul>
+                        <div class="image-bubble" data-img-svg="false" data-img-description="A D-Glicose pode existir em uma forma de cadeia aberta (linear) ou em uma forma de anel (cíclica), que é mais estável em solução. A forma cíclica é resultado de uma reação interna entre o grupo aldeído (C1) e a hidroxila (C5).">
+                            <img src="glicose.jpg" alt="Comparação entre forma linear e cíclica da Glicose" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-epimeros">
+                <div class="summary">Isomeria: Epímeros</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>Isômeros são moléculas com a mesma fórmula química, mas com arranjos espaciais diferentes.</li>
+                            <li><span class="term" data-description="Dois isômeros que diferem na configuração de apenas UM centro assimétrico (carbono quiral).">Epímeros</span> são um tipo de isômero.</li>
+                            <li>Por exemplo, a <strong>D-Glicose</strong>, <strong>D-Manose</strong> e <strong>D-Galactose</strong> são epímeros entre si:</li>
+                            <li>A Manose difere da Glicose apenas na posição da hidroxila do Carbono 2 (C2).</li>
+                            <li>A Galactose difere da Glicose apenas na posição da hidroxila do Carbono 4 (C4).</li>
+                        </ul>
+                        <div class="image-bubble" data-img-svg="false" data-img-description="Epímeros são isômeros que diferem na configuração de apenas um carbono quiral. A D-Manose é um epímero da D-Glicose no carbono C2. A D-Galactose é um epímero da D-Glicose no carbono C4.">
+                            <img src="epimero.jpg" alt="Comparação entre epímeros D-Manose, D-Glicose e D-Galactose" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="topic-card" id="topic-anomeros">
+                <div class="summary">Isomeria: Anômeros (α e β)</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>A ciclização de um monossacarídeo cria um novo centro quiral no carbono que antes era da carbonila. Este é chamado de <span class="term" data-description="O carbono que pertencia ao grupo carbonila (aldeído ou cetona) na forma linear e que se torna um novo centro quiral na forma cíclica.">carbono anomérico</span>.</li>
+                            <li>Isso resulta em dois estereoisômeros chamados <span class="term" data-description="Isômeros de um açúcar cíclico que diferem apenas na configuração do carbono anomérico (C1 em aldoses).">anômeros</span>, designados como alfa (α) e beta (β).</li>
+                            <li>Na <strong>α-D-Glicose</strong>, a hidroxila (-OH) do carbono anomérico está em posição oposta (trans) ao grupo -CH₂OH (C6).</li>
+                            <li>Na <strong>β-D-Glicose</strong>, a hidroxila (-OH) está na mesma posição (cis) que o grupo -CH₂OH.</li>
+                        </ul>
+                         <div class="image-bubble" data-img-svg="false" data-img-description="Anômeros são isômeros que diferem na configuração do carbono anomérico (o C1 em aldoses), que é formado durante a ciclização. Na α-D-Glicopiranose, a hidroxila (OH) do C1 está para baixo (trans em relação ao CH₂OH). Na β-D-Glicopiranose, ela está para cima (cis em relação ao CH₂OH).">
+                            <img src="alpha-beta.jpg" alt="Comparação entre anômeros Alfa e Beta da Glicose" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Di- and Polysaccharides Section -->
+    <section id="di-e-polissacarideos" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">Ligando os Monômeros</h2>
+            <p class="section-subtitle">Quando os monossacarídeos se unem, formam moléculas maiores e mais complexas, com funções que vão desde o açúcar de mesa até as estruturas das árvores.</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-ligacao-glicosidica">
+                <div class="summary">A Ligação Glicosídica</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>Monossacarídeos se unem para formar oligossacarídeos e polissacarídeos através de uma <span class="term" data-description="Uma ligação covalente formada entre o carbono anomérico de um açúcar e um grupo hidroxila de outro açúcar. Uma molécula de água é liberada neste processo (reação de desidratação).">ligação glicosídica</span>.</li>
+                            <li>A orientação (α ou β) do carbono anomérico que participa da ligação determina se a ligação é do tipo α ou β.</li>
+                            <li>Isso tem consequências profundas para a estrutura e função da molécula final.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-dissacarideos">
+                <div class="summary">Dissacarídeos Comuns</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        Dissacarídeos são formados por duas unidades de monossacarídeos.
+                        <ul>
+                            <li><strong>Maltose:</strong> Formada por duas unidades de D-Glicose unidas por uma ligação <span class="term" data-description="Ligação entre o carbono 1 (em configuração alfa) da primeira glicose e o carbono 4 da segunda glicose.">α(1→4)</span>. É o açúcar do malte.</li>
+                             <li><strong>Sacarose:</strong> Formada por Glicose + Frutose. É o açúcar de mesa comum.</li>
+                              <li><strong>Lactose:</strong> Formada por Galactose + Glicose. É o açúcar do leite.</li>
+                        </ul>
+                        <div class="image-bubble" data-img-svg="false" data-img-description="A Maltose é um dissacarídeo formado pela união de duas moléculas de D-Glicose através de uma ligação glicosídica do tipo α(1→4). Essa ligação ocorre entre o carbono 1 da primeira glicose e o carbono 4 da segunda, com a liberação de uma molécula de água.">
+                           <img src="Ligação glicosídica.jpg" alt="Formação da Maltose a partir de duas moléculas de Glicose" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-polissacarideos-reserva">
+                <div class="summary">Polissacarídeos de Reserva</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        São polímeros de glicose usados para armazenar energia.
+                         <ul>
+                            <li><strong>Amido (Plantas):</strong> Uma mistura de amilose (linear, ligações α(1→4)) e amilopectina (ramificada, com pontos de ramificação α(1→6)).</li>
+                            <li><span class="term" data-description="A principal forma de armazenamento de glicose em animais, encontrado principalmente no fígado e nos músculos. É um polímero de glicose altamente ramificado, com ligações α(1→4) na cadeia principal e ligações α(1→6) nos pontos de ramificação.">Glicogênio (Animais):</span> Similar à amilopectina, mas ainda mais ramificado. Permite uma liberação rápida de glicose quando necessário.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-polissacarideos-estruturais">
+                <div class="summary">Polissacarídeos Estruturais</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        Fornecem suporte e rigidez às estruturas biológicas.
+                        <ul>
+                            <li><strong>Celulose (Plantas):</strong> Polímero linear de glicose unido por ligações <span class="term" data-description="As ligações beta criam cadeias retas e rígidas que se alinham em fibras fortes, ideais para estrutura. A maioria dos animais, incluindo humanos, não consegue digerir as ligações β(1→4) da celulose.">β(1→4)</span>. É o principal componente da parede celular vegetal e a molécula orgânica mais abundante na Terra.</li>
+                            <li><strong>Quitina (Fungos e Insetos):</strong> Semelhante à celulose, mas com um grupo acetilamina no carbono 2 da glicose. Forma o exoesqueleto de artrópodes e a parede celular de fungos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz-section" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">Teste seu Conhecimento</h2>
+            <p class="section-subtitle">Vamos ver o que você aprendeu! Responda às perguntas a seguir para testar sua compreensão sobre os carboidratos.</p>
+        </div>
+
+        <div id="quiz-area" class="w-full max-w-3xl flex flex-col items-center">
+            
+            <!-- Progress Bar -->
+            <div id="progress-bar-container">
+                <div id="progress-bar-fill" style="width: 0%;">0%</div>
+            </div>
+            <div id="progress-label">Progresso: 0 de 60 questões dominadas</div>
+
+            <div id="quiz-container" class="quiz-container hidden">
+                <div id="timer-display">30</div>
+                <div id="question-counter-display"></div>
+                <h3 id="quiz-question"></h3>
+                <ul id="quiz-options"></ul>
+            </div>
+            <div id="quiz-results" class="quiz-container hidden">
+                <h3>Quiz Finalizado!</h3>
+                <div id="quiz-percentage">100%</div>
+                <div class="results-stats">
+                    <span id="stat-correct-count" class="stat-correct"></span>
+                    <span id="stat-incorrect-count" class="stat-incorrect"></span>
+                </div>
+                <h4 class="text-lg font-semibold mt-6 mb-2 text-slate-700">Tópicos para revisar:</h4>
+                <ul id="missed-topics-list"></ul>
+                 <button id="restart-quiz-btn">Novo Quiz</button>
+            </div>
+            <button id="quiz-start-btn">Começar Quiz</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-signature">
+        <p>Feito por Rafael Chaves Sebe.</p>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="modal-overlay" class="fixed inset-0">
+        <div id="modal-content" class="relative">
+             <button id="modal-close-btn" class="absolute top-4 right-4 z-20">&times;</button>
+            <div id="modal-header" class="relative hidden">
+                <h3 id="modal-title"></h3>
+            </div>
+            <div id="modal-image-container" class="hidden">
+                <!-- Image will be injected here by JS -->
+            </div>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observer for section background changes
+            const bgObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const glowId = `bg-${entry.target.id}`;
+                    const glowEl = document.getElementById(glowId);
+                    if (glowEl) {
+                        if (entry.isIntersecting) {
+                            glowEl.style.opacity = '0.25';
+                        } else {
+                            glowEl.style.opacity = '0';
+                        }
+                    }
+                });
+            }, { threshold: 0.4 }); 
+
+            document.querySelectorAll('#definicao-carboidratos, #monossacarideos, #di-e-polissacarideos').forEach(section => {
+                bgObserver.observe(section);
+            });
+
+            // Observer for card animations
+            const cardObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else if (entry.boundingClientRect.top > 0) {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, {
+                threshold: 0.01
+            });
+            document.querySelectorAll('.topic-card, .section-header-card').forEach(card => {
+                cardObserver.observe(card);
+            });
+
+            // Modal logic
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalHeader = document.getElementById('modal-header');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const modalImageContainer = document.getElementById('modal-image-container');
+
+            function openModal() {
+                modalOverlay.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            const closeModal = () => {
+                modalOverlay.classList.remove('visible');
+                setTimeout(() => {
+                    if (!modalOverlay.classList.contains('visible')) {
+                         document.body.style.overflow = '';
+                         modalImageContainer.innerHTML = '';
+                    }
+                }, 400); 
+            };
+
+            // Event Listeners for Terms
+            document.querySelectorAll('.term').forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const title = term.textContent;
+                    const description = term.getAttribute('data-description');
+                    const parentSection = term.closest('section');
+                    let theme = 'definicao-carboidratos'; 
+                    if (parentSection && parentSection.id) {
+                       if (parentSection.id === 'monossacarideos') theme = 'monossacarideos';
+                       else if (parentSection.id === 'di-e-polissacarideos') theme = 'di-e-polissacarideos';
+                    }
+                    
+                    modalContent.classList.remove('image-modal');
+                    modalHeader.classList.remove('hidden');
+                    modalImageContainer.classList.add('hidden');
+                    
+                    modalTitle.textContent = title;
+                    modalDescription.textContent = description;
+                    
+                    modalContent.className = 'relative'; 
+                    modalHeader.className = '';
+                    modalContent.classList.add(`theme-${theme}`);
+                    modalHeader.classList.add(`theme-${theme}`);
+                    
+                    openModal();
+                });
+            });
+
+            // Event Listeners for Images
+            document.querySelectorAll('.image-bubble').forEach(bubble => {
+                bubble.addEventListener('click', () => {
+                    const isSvg = bubble.dataset.imgSvg === 'true';
+                    const description = bubble.dataset.imgDescription;
+                    const parentSection = bubble.closest('section');
+                     let theme = 'definicao-carboidratos'; 
+                    if (parentSection && parentSection.id) {
+                       if (parentSection.id === 'monossacarideos') theme = 'monossacarideos';
+                       else if (parentSection.id === 'di-e-polissacarideos') theme = 'di-e-polissacarideos';
+                    }
+
+                    modalContent.classList.add('image-modal');
+                    modalHeader.classList.add('hidden');
+                    modalImageContainer.classList.remove('hidden');
+                    
+                    modalImageContainer.innerHTML = ''; // Limpa conteúdo anterior
+
+                    if (isSvg) {
+                       const svgElement = bubble.querySelector('svg');
+                       if (svgElement) modalImageContainer.innerHTML = svgElement.outerHTML;
+                    } else {
+                        const imgElement = bubble.querySelector('img');
+                        if (imgElement) {
+                            const newImg = document.createElement('img');
+                            newImg.src = imgElement.src;
+                            newImg.alt = imgElement.alt;
+                            modalImageContainer.appendChild(newImg);
+                        }
+                    }
+                    
+                    modalDescription.textContent = description;
+
+                    modalContent.className = 'relative image-modal'; 
+                    modalContent.classList.add(`theme-${theme}`);
+
+                    openModal();
+                });
+            });
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (event) => {
+                if (event.target === modalOverlay) closeModal();
+            });
+            
+            // Accordion logic
+            document.querySelectorAll('.topic-card .summary').forEach(summary => {
+                summary.addEventListener('click', (e) => {
+                    const card = e.currentTarget.parentElement;
+                    toggleAccordion(card);
+                });
+            });
+
+            function toggleAccordion(cardToToggle) {
+                const contentWrapper = cardToToggle.querySelector('.topic-content-wrapper');
+                const isOpen = cardToToggle.classList.contains('is-open');
+
+                const parentGrid = cardToToggle.closest('.topics-grid');
+                parentGrid.querySelectorAll('.topic-card.is-open').forEach(openCard => {
+                    if (openCard !== cardToToggle) {
+                        const otherContentWrapper = openCard.querySelector('.topic-content-wrapper');
+                        otherContentWrapper.style.maxHeight = '0px';
+                        openCard.classList.remove('is-open');
+                    }
+                });
+
+                if (isOpen) {
+                    contentWrapper.style.maxHeight = '0px';
+                    cardToToggle.classList.remove('is-open');
+                } else {
+                    const content = cardToToggle.querySelector('.topic-content');
+                    contentWrapper.style.maxHeight = content.scrollHeight + 'px';
+                    cardToToggle.classList.add('is-open');
+                }
+            }
+            
+            // ===================================
+            // == QUIZ LOGIC
+            // ===================================
+
+            const questionBank = [
+                // --- FÁCIL: 20 questões ---
+                { id: 1, difficulty: 'Fácil', question: "Qual é a definição química de um carboidrato?", topic: "Definição e Estrutura Básica", options: ["Poli-hidroxiácidos", "Poliidroxialdeídos ou poliidroxicetonas", "Cadeias de aminoácidos", "Ácidos graxos com glicerol"], correctAnswer: 1 },
+                { id: 2, difficulty: 'Fácil', question: "Qual o sufixo característico da maioria dos carboidratos?", topic: "Definição e Estrutura Básica", options: ["-ina", "-ase", "-ol", "-ose"], correctAnswer: 3 },
+                { id: 3, difficulty: 'Fácil', question: "Qual é a principal função dos carboidratos nos organismos vivos?", topic: "Funções Biológicas", options: ["Isolamento térmico", "Armazenamento de informação genética", "Fonte e armazenamento de energia", "Catálise de reações"], correctAnswer: 2 },
+                { id: 4, difficulty: 'Fácil', question: "A glicose é um exemplo de qual tipo de carboidrato?", topic: "Classificação dos Carboidratos", options: ["Monossacarídeo", "Dissacarídeo", "Polissacarídeo", "Oligossacarídeo"], correctAnswer: 0 },
+                { id: 5, difficulty: 'Fácil', question: "Uma molécula com o grupo carbonila (C=O) na extremidade da cadeia é classificada como:", topic: "Aldoses e Cetoses", options: ["Cetose", "Aldose", "Sacarose", "Polissacarídeo"], correctAnswer: 1 },
+                { id: 6, difficulty: 'Fácil', question: "Qual é o açúcar encontrado no leite?", topic: "Dissacarídeos Comuns", options: ["Maltose", "Sacarose", "Lactose", "Frutose"], correctAnswer: 2 },
+                { id: 7, difficulty: 'Fácil', question: "A celulose, encontrada na parede celular das plantas, é um exemplo de:", topic: "Polissacarídeos Estruturais", options: ["Monossacarídeo", "Dissacarídeo", "Polissacarídeo estrutural", "Polissacarídeo de reserva"], correctAnswer: 2 },
+                { id: 8, difficulty: 'Fácil', question: "Qual polissacarídeo é a principal forma de armazenamento de energia em animais?", topic: "Polissacarídeos de Reserva", options: ["Amido", "Celulose", "Quitina", "Glicogênio"], correctAnswer: 3 },
+                { id: 9, difficulty: 'Fácil', isGraphic: true, question: "Observando a imagem, qual molécula é uma cetose?", topic: "Aldoses e Cetoses", options: ["D-Gliceraldeído", "Diidroxiacetona", "Ambas", "Nenhuma"], correctAnswer: 1, imageName: "aldose-cetose .jpg" },
+                { id: 10, difficulty: 'Fácil', question: "A união de duas moléculas de glicose forma qual dissacarídeo?", topic: "Dissacarídeos Comuns", options: ["Sacarose", "Lactose", "Maltose", "Frutose"], correctAnswer: 2 },
+                { id: 11, difficulty: 'Fácil', question: "A fórmula empírica geral da maioria dos carboidratos é:", topic: "Definição e Estrutura Básica", options: ["(CHO)n", "(CH₂O)n", "(C₂H₂O)n", "(CHO₂)n"], correctAnswer: 1 },
+                { id: 12, difficulty: 'Fácil', question: "Qual das seguintes não é uma função principal dos carboidratos?", topic: "Funções Biológicas", options: ["Fonte de energia", "Estrutura do DNA/RNA", "Catálise de reações (enzimas)", "Sinalização celular"], correctAnswer: 2 },
+                { id: 13, difficulty: 'Fácil', question: "Um polissacarídeo é formado por mais de quantas unidades de monossacarídeos?", topic: "Classificação dos Carboidratos", options: ["2", "5", "10", "20"], correctAnswer: 3 },
+                { id: 14, difficulty: 'Fácil', question: "A frutose, encontrada em frutas, é um exemplo de:", topic: "Aldoses e Cetoses", options: ["Aldose", "Cetose", "Polissacarídeo", "Dissacarídeo"], correctAnswer: 1 },
+                { id: 15, difficulty: 'Fácil', question: "A sacarose, o açúcar de mesa, é um dissacarídeo formado por:", topic: "Dissacarídeos Comuns", options: ["Glicose + Glicose", "Glicose + Galactose", "Glicose + Frutose", "Frutose + Frutose"], correctAnswer: 2 },
+                { id: 16, difficulty: 'Fácil', question: "O amido é a forma de armazenamento de energia em qual tipo de organismo?", topic: "Polissacarídeos de Reserva", options: ["Animais", "Fungos", "Bactérias", "Plantas"], correctAnswer: 3 },
+                { id: 17, difficulty: 'Fácil', question: "Qual o nome da ligação que une os monossacarídeos?", topic: "A Ligação Glicosídica", options: ["Peptídica", "Glicosídica", "Fosfodiéster", "Iônica"], correctAnswer: 1 },
+                { id: 18, difficulty: 'Fácil', isGraphic: true, question: "A imagem mostra a forma cíclica de qual monossacarídeo?", topic: "Linear vs. Cíclica", options: ["Frutose", "Ribose", "Glicose", "Galactose"], correctAnswer: 2, imageName: "glicose.jpg" },
+                { id: 19, difficulty: 'Fácil', isGraphic: true, question: "Na imagem da formação da maltose, quantas moléculas de glicose são necessárias?", topic: "Dissacarídeos Comuns", options: ["Uma", "Duas", "Três", "Quatro"], correctAnswer: 1, imageName: "Ligação glicosídica.jpg" },
+                { id: 20, difficulty: 'Fácil', question: "Ribose é um monossacarídeo essencial para qual molécula?", topic: "Funções Biológicas", options: ["Proteínas", "DNA", "RNA", "Gorduras"], correctAnswer: 2 },
+
+                // --- MÉDIA: 20 questões ---
+                { id: 21, difficulty: 'Média', question: "O que são epímeros?", topic: "Isomeria: Epímeros", options: ["Isômeros que são imagens especulares um do outro", "Isômeros que diferem na configuração de todos os carbonos quirais", "Isômeros que diferem na configuração de apenas um carbono quiral", "Isômeros com diferentes fórmulas moleculares"], correctAnswer: 2 },
+                { id: 22, difficulty: 'Média', question: "A D-Galactose é um epímero da D-Glicose em qual carbono?", topic: "Isomeria: Epímeros", options: ["C1", "C2", "C3", "C4"], correctAnswer: 3 },
+                { id: 23, difficulty: 'Média', question: "A forma cíclica de uma aldose, como a glicose, é chamada de:", topic: "Linear vs. Cíclica", options: ["Hemicetal", "Hemiacetal", "Cetona", "Aldeído"], correctAnswer: 1 },
+                { id: 24, difficulty: 'Média', question: "Qual é a principal diferença entre os anômeros α e β da glicose?", topic: "Isomeria: Anômeros (α e β)", options: ["O número de átomos de carbono", "A posição da hidroxila no carbono anomérico (C1)", "Se a forma é linear ou cíclica", "A presença de um grupo aldeído ou cetona"], correctAnswer: 1 },
+                { id: 25, difficulty: 'Média', question: "Que tipo de reação forma uma ligação glicosídica?", topic: "A Ligação Glicosídica", options: ["Hidrólise", "Oxidação", "Desidratação", "Redução"], correctAnswer: 2 },
+                { id: 26, difficulty: 'Média', question: "Qual a diferença estrutural fundamental entre amido/glicogênio e celulose?", topic: "Polissacarídeos Estruturais", options: ["A celulose é feita de frutose, e o amido de glicose", "O tipo de ligação glicosídica (α no amido, β na celulose)", "O amido é linear e a celulose é ramificada", "A celulose é encontrada em animais e o amido em plantas"], correctAnswer: 1 },
+                { id: 27, difficulty: 'Média', question: "Por que os humanos não conseguem digerir celulose?", topic: "Polissacarídeos Estruturais", options: ["Porque a celulose é muito grande", "Porque não temos enzimas para quebrar as ligações glicosídicas β(1→4)", "Porque a celulose não contém energia", "Porque não temos enzimas para quebrar as ligações α(1→4)"], correctAnswer: 1 },
+                { id: 28, difficulty: 'Média', isGraphic: true, question: "Na imagem da formação da Maltose, qual tipo de ligação glicosídica é formada?", topic: "Dissacarídeos Comuns", options: ["α(1→2)", "β(1→4)", "α(1→4)", "α(1→6)"], correctAnswer: 2, imageName: "Ligação glicosídica.jpg" },
+                { id: 29, difficulty: 'Média', question: "Glicoconjugados, como glicoproteínas, são importantes para qual função celular?", topic: "Funções Biológicas", options: ["Armazenamento de energia primária", "Reconhecimento e sinalização na superfície celular", "Contração muscular", "Transporte de oxigênio"], correctAnswer: 1 },
+                { id: 30, difficulty: 'Média', isGraphic: true, question: "A forma cíclica da glicose é mais ou menos estável que a forma linear em solução?", topic: "Linear vs. Cíclica", options: ["Mais estável", "Menos estável", "Igualmente estável", "Depende da temperatura"], correctAnswer: 0, imageName: "glicose.jpg" },
+                { id: 31, difficulty: 'Média', question: "Qual é o carbono anomérico?", topic: "Isomeria: Anômeros (α e β)", options: ["O último carbono da cadeia", "Qualquer carbono com uma hidroxila", "O carbono que pertencia à carbonila e se torna quiral na ciclização", "O carbono ligado ao grupo CH₂OH"], correctAnswer: 2 },
+                { id: 32, difficulty: 'Média', question: "A quitina, que forma o exoesqueleto de insetos, é um polímero de qual tipo de molécula?", topic: "Polissacarídeos Estruturais", options: ["Glicose", "Um derivado da glicose", "Frutose", "Galactose"], correctAnswer: 1 },
+                { id: 33, difficulty: 'Média', question: "Qual a principal diferença entre amilose e amilopectina, os componentes do amido?", topic: "Polissacarídeos de Reserva", options: ["Amilose é feita de frutose", "Amilose é ramificada e amilopectina é linear", "Amilose é linear e amilopectina é ramificada", "Não há diferença"], correctAnswer: 2 },
+                { id: 34, difficulty: 'Média', question: "A reação de ciclização da D-glicose envolve a reação do grupo aldeído (C1) com a hidroxila de qual outro carbono?", topic: "Linear vs. Cíclica", options: ["C2", "C4", "C5", "C6"], correctAnswer: 2 },
+                { id: 35, difficulty: 'Média', question: "Qual dos seguintes é um oligossacarídeo?", topic: "Classificação dos Carboidratos", options: ["Glicose", "Celulose", "Sacarose", "Glicogênio"], correctAnswer: 2 },
+                { id: 36, difficulty: 'Média', question: "O glicogênio é estruturalmente mais semelhante a qual componente do amido?", topic: "Polissacarídeos de Reserva", options: ["Amilose", "Amilopectina", "Ambos", "Nenhum"], correctAnswer: 1 },
+                { id: 37, difficulty: 'Média', question: "Em uma ligação glicosídica β(1→4), o 'β' se refere à configuração de qual carbono?", topic: "A Ligação Glicosídica", options: ["Do carbono 1 do primeiro monossacarídeo", "Do carbono 4 do segundo monossacarídeo", "De ambos os carbonos", "Nenhum dos anteriores"], correctAnswer: 0 },
+                { id: 38, difficulty: 'Média', isGraphic: true, question: "Qual imagem representa o anômero β da D-Glicopiranose?", topic: "Isomeria: Anômeros (α e β)", options: ["A imagem da esquerda", "A imagem da direita", "Ambas", "Nenhuma"], correctAnswer: 1, imageName: "alpha-beta.jpg" },
+                { id: 39, difficulty: 'Média', isGraphic: true, question: "A D-Manose (à esquerda) e a D-Glicose (ao centro) são epímeros em qual carbono?", topic: "Isomeria: Epímeros", options: ["C2", "C3", "C4", "C5"], correctAnswer: 0, imageName: "epimero.jpg" },
+                { id: 40, difficulty: 'Média', question: "A forma cíclica de uma cetose é chamada de:", topic: "Linear vs. Cíclica", options: ["Hemicetal", "Hemiacetal", "Aldol", "Cetol"], correctAnswer: 0 },
+
+                // --- DIFÍCIL: 20 questões ---
+                { id: 41, difficulty: 'Difícil', question: "Qual a diferença estrutural entre o glicogênio e a amilopectina?", topic: "Polissacarídeos de Reserva", options: ["O glicogênio tem ligações β", "A amilopectina não é ramificada", "O glicogênio é mais intensamente ramificado que a amilopectina", "Não há diferença"], correctAnswer: 2 },
+                { id: 42, difficulty: 'Difícil', question: "Se a D-Manose e a D-Galactose são ambas epímeros da D-Glicose, elas são epímeros entre si?", topic: "Isomeria: Epímeros", options: ["Sim, em C2 e C4", "Não, porque elas diferem na configuração de mais de um carbono quiral", "Sim, apenas em C3", "Apenas se estiverem na forma cíclica"], correctAnswer: 1 },
+                { id: 43, difficulty: 'Difícil', question: "Uma ligação glicosídica α(1→6) é responsável por qual característica estrutural no glicogênio e na amilopectina?", topic: "Polissacarídeos de Reserva", options: ["A linearidade da cadeia", "A formação de dupla hélice", "Os pontos de ramificação na cadeia", "A ligação com proteínas"], correctAnswer: 2 },
+                { id: 44, difficulty: 'Difícil', isGraphic: true, question: "Na β-D-Glicopiranose, como está a orientação da hidroxila (-OH) do C1 em relação ao grupo -CH₂OH do C5?", topic: "Isomeria: Anômeros (α e β)", options: ["Na mesma direção (cis)", "Em direções opostas (trans)", "A 90 graus", "Não há relação"], correctAnswer: 0, imageName: "alpha-beta.jpg" },
+                { id: 45, difficulty: 'Difícil', question: "A sacarose é considerada um açúcar não-redutor. Por quê?", topic: "Dissacarídeos Comuns", options: ["Porque é muito doce", "Porque a ligação glicosídica envolve os carbonos anoméricos de ambas as unidades", "Porque ela não pode ser digerida", "Porque é um polímero muito longo"], correctAnswer: 1 },
+                { id: 46, difficulty: 'Difícil', isGraphic: true, question: "A D-Manose e a D-Glicose, mostradas na figura, diferem na estereoquímica de qual carbono?", topic: "Isomeria: Epímeros", options: ["C4", "C3", "C2", "C5"], correctAnswer: 2, imageName: "epimero.jpg" },
+                { id: 47, difficulty: 'Difícil', question: "A estrutura rígida e fibrosa da celulose é resultado de qual característica molecular?", topic: "Polissacarídeos Estruturais", options: ["Das muitas ramificações na cadeia", "Das ligações α(1→4) que formam hélices", "Das ligações β(1→4) que formam cadeias retas e das pontes de hidrogênio entre elas", "Da alta solubilidade em água"], correctAnswer: 2 },
+                { id: 48, difficulty: 'Difícil', question: "A qual classe de carboidratos pertence a rafinose, um trissacarídeo encontrado em vegetais?", topic: "Classificação dos Carboidratos", options: ["Monossacarídeo", "Dissacarídeo", "Oligossacarídeo", "Polissacarídeo"], correctAnswer: 2 },
+                { id: 49, difficulty: 'Difícil', question: "A unidade monomérica que forma a quitina é a N-acetilglicosamina, que é um derivado de qual monossacarídeo?", topic: "Polissacarídeos Estruturais", options: ["Glicose", "Frutose", "Galactose", "Manose"], correctAnswer: 0 },
+                { id: 50, difficulty: 'Difícil', question: "Por que a estrutura altamente ramificada do glicogênio é vantajosa para o armazenamento de energia em animais?", topic: "Polissacarídeos de Reserva", options: ["Porque ocupa menos espaço na célula", "Porque as ramificações criam muitas extremidades não redutoras, de onde a glicose pode ser liberada rapidamente", "Porque as ramificações tornam a molécula mais solúvel em água", "Porque impede a digestão por enzimas"], correctAnswer: 1 },
+                { id: 51, difficulty: 'Difícil', question: "Qual o nome da estrutura cíclica de 6 membros formada pela glicose?", topic: "Linear vs. Cíclica", options: ["Furanose", "Piranose", "Aldose", "Hexose"], correctAnswer: 1 },
+                { id: 52, difficulty: 'Difícil', question: "A intolerância à lactose ocorre devido à deficiência de uma enzima que quebra qual ligação glicosídica?", topic: "Dissacarídeos Comuns", options: ["α(1→4) na maltose", "β(1→4) na lactose", "α(1→2) na sacarose", "β(1→4) na celulose"], correctAnswer: 1 },
+                { id: 53, difficulty: 'Difícil', question: "O processo de interconversão entre os anômeros α e β em solução é chamado de:", topic: "Isomeria: Anômeros (α e β)", options: ["Mutarrotação", "Epimerização", "Hidrólise", "Glicosilação"], correctAnswer: 0 },
+                { id: 54, difficulty: 'Difícil', question: "Em qual das seguintes moléculas as ligações β-glicosídicas são predominantes?", topic: "A Ligação Glicosídica", options: ["Amido", "Glicogênio", "Celulose", "Maltose"], correctAnswer: 2 },
+                { id: 55, difficulty: 'Difícil', question: "Qual característica permite que a celulose forme fibras longas e resistentes?", topic: "Polissacarídeos Estruturais", options: ["Sua estrutura ramificada", "A capacidade de formar pontes de hidrogênio intercadeias", "Sua alta solubilidade em água", "A presença de ligações α(1→6)"], correctAnswer: 1 },
+                { id: 56, difficulty: 'Difícil', question: "A qual carbono o grupo fosfato se liga na desoxirribose para formar o esqueleto do DNA?", topic: "Funções Biológicas", options: ["C1' e C2'", "C2' e C3'", "C3' e C5'", "C1' e C4'"], correctAnswer: 2 },
+                { id: 57, difficulty: 'Difícil', isGraphic: true, question: "A D-Galactose (à direita) é um epímero C4 da D-Glicose. Onde a hidroxila do C4 está na D-Glicose?", topic: "Isomeria: Epímeros", options: ["Para a direita", "Para a esquerda", "Para cima", "Para baixo"], correctAnswer: 0, imageName: "epimero.jpg" },
+                { id: 58, difficulty: 'Difícil', isGraphic: true, question: "Qual é a principal diferença entre o anômero α (esquerda) e o anômero β (direita) mostrados na imagem?", topic: "Isomeria: Anômeros (α e β)", options: ["A posição do grupo -OH no carbono 2", "A posição do grupo -OH no carbono 1", "A posição do grupo -CH₂OH", "O tipo de anel formado"], correctAnswer: 1, imageName: "alpha-beta.jpg" },
+                { id: 59, difficulty: 'Difícil', isGraphic: true, question: "A reação mostrada para formar a maltose libera qual pequena molécula?", topic: "Dissacarídeos Comuns", options: ["CO₂", "O₂", "H₂O", "CH₄"], correctAnswer: 2, imageName: "Ligação glicosídica.jpg" },
+                { id: 60, difficulty: 'Difícil', isGraphic: true, question: "Observando a forma linear da glicose, qual carbono é o grupo aldeído?", topic: "Linear vs. Cíclica", options: ["C1", "C2", "C5", "C6"], correctAnswer: 0, imageName: "glicose.jpg" },
+            ];
+
+            const startBtn = document.getElementById('quiz-start-btn');
+            const restartBtn = document.getElementById('restart-quiz-btn');
+            const quizContainer = document.getElementById('quiz-container');
+            const resultsContainer = document.getElementById('quiz-results');
+            const questionEl = document.getElementById('quiz-question');
+            const optionsEl = document.getElementById('quiz-options');
+            const questionCounterDisplay = document.getElementById('question-counter-display');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressLabel = document.getElementById('progress-label');
+            const timerDisplay = document.getElementById('timer-display');
+            
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let missedTopics = [];
+            let activeQuiz = [];
+            let correctlyAnsweredIds = [];
+
+            let questionTimer;
+            let countdownInterval;
+            const TIMER_DURATION = 30; // seconds
+
+            function loadProgress() {
+                const savedProgress = localStorage.getItem('carbquiz_correctlyAnsweredIds');
+                correctlyAnsweredIds = savedProgress ? JSON.parse(savedProgress) : [];
+                updateProgressBar();
+            }
+
+            function saveProgress() {
+                localStorage.setItem('carbquiz_correctlyAnsweredIds', JSON.stringify(correctlyAnsweredIds));
+            }
+
+            function updateProgressBar() {
+                const totalQuestions = questionBank.length;
+                const answeredCount = correctlyAnsweredIds.length;
+                const percentage = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+                
+                progressBarFill.style.width = `${percentage}%`;
+                progressBarFill.textContent = `${percentage}%`;
+                progressLabel.textContent = `Progresso: ${answeredCount} de ${totalQuestions} questões dominadas`;
+            }
+            
+            function startQuiz() {
+                const availableQuestions = questionBank.filter(q => !correctlyAnsweredIds.includes(q.id));
+                
+                if (availableQuestions.length === 0) {
+                     resultsContainer.classList.remove('hidden');
+                     quizContainer.classList.add('hidden');
+                     startBtn.classList.add('hidden');
+                     document.getElementById('quiz-percentage').textContent = "100%";
+                     document.getElementById('stat-correct-count').textContent = `✔️ ${questionBank.length} Acertos`;
+                     document.getElementById('stat-incorrect-count').textContent = `❌ 0 Erros`;
+                     document.getElementById('missed-topics-list').innerHTML = '<li class="text-green-600 font-semibold">Parabéns! Você dominou todas as questões.</li>';
+                     return;
+                }
+                
+                activeQuiz = [...availableQuestions].sort(() => 0.5 - Math.random()).slice(0, 15);
+                
+                currentQuestionIndex = 0;
+                score = 0;
+                missedTopics = [];
+                startBtn.classList.add('hidden');
+                resultsContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                showQuestion();
+            }
+
+            function startTimer() {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+
+                let timeLeft = TIMER_DURATION;
+                timerDisplay.textContent = timeLeft;
+                timerDisplay.className = 'absolute top-10 left-10 w-11 h-11 rounded-full bg-white/40 border-2 border-slate-600 flex items-center justify-center text-base font-bold text-slate-800 transition-all duration-300 ease-in-out'; // Reset classes
+                
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = timeLeft;
+                    if (timeLeft <= 10 && timeLeft > 5) {
+                        timerDisplay.classList.add('warning');
+                    } else if (timeLeft <= 5) {
+                        timerDisplay.classList.add('danger');
+                    }
+                }, 1000);
+
+                questionTimer = setTimeout(() => {
+                    clearInterval(countdownInterval);
+                    handleTimeUp();
+                }, TIMER_DURATION * 1000);
+            }
+
+            function handleTimeUp() {
+                 selectAnswer(null); 
+            }
+
+            function showQuestion() {
+                resetState();
+                if (currentQuestionIndex >= activeQuiz.length) {
+                    showResults();
+                    return;
+                }
+                const questionData = activeQuiz[currentQuestionIndex];
+                
+                questionCounterDisplay.textContent = `${currentQuestionIndex + 1}/${activeQuiz.length}`;
+                questionCounterDisplay.classList.remove('facil-bg', 'media-bg', 'dificil-bg');
+                if (questionData.difficulty === 'Fácil') questionCounterDisplay.classList.add('facil-bg');
+                else if (questionData.difficulty === 'Média') questionCounterDisplay.classList.add('media-bg');
+                else if (questionData.difficulty === 'Difícil') questionCounterDisplay.classList.add('dificil-bg');
+
+                if (questionData.isGraphic) {
+                    const topicId = `topic-${questionData.topic.toLowerCase().replace(/:/g, '').replace(/ /g, '-')}`;
+                    const topicCard = document.getElementById(topicId);
+                    if(topicCard){
+                        const imageElement = topicCard.querySelector(`img[src*="${questionData.imageName}"]`); 
+                        if (imageElement) {
+                            const clonedImage = imageElement.cloneNode(true);
+                            clonedImage.className = 'quiz-question-image mx-auto mb-6 bg-white/40 rounded-lg p-2 max-w-[400px]';
+                            questionEl.parentNode.insertBefore(clonedImage, questionEl);
+                        }
+                    }
+                }
+
+                questionEl.textContent = questionData.question;
+                
+                questionData.options.forEach((option, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = option;
+                    li.classList.add('quiz-option');
+                    li.dataset.index = index;
+                    li.addEventListener('click', selectAnswer);
+                    optionsEl.appendChild(li);
+                });
+                startTimer();
+            }
+
+            function resetState() {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+                const existingImage = quizContainer.querySelector('.quiz-question-image');
+                if (existingImage) existingImage.remove();
+                while(optionsEl.firstChild) {
+                    optionsEl.removeChild(optionsEl.firstChild);
+                }
+                document.body.classList.remove('correct-bg', 'incorrect-bg');
+            }
+            
+            function selectAnswer(e) {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+
+                const selectedOption = e ? e.target : null;
+                Array.from(optionsEl.children).forEach(option => option.removeEventListener('click', selectAnswer));
+
+                const currentQuestion = activeQuiz[currentQuestionIndex];
+                const correctIndex = currentQuestion.correctAnswer;
+                let isCorrect = false;
+
+                if(selectedOption && parseInt(selectedOption.dataset.index) === correctIndex) {
+                    isCorrect = true;
+                }
+                
+                Array.from(optionsEl.children).forEach((optionNode, index) => {
+                    optionNode.classList.add('disabled');
+                    if (index === correctIndex) optionNode.classList.add('correct-answer');
+                });
+
+                if (isCorrect) {
+                    score++;
+                    if(selectedOption) selectedOption.classList.add('correct-answer');
+                    document.body.classList.add('correct-bg');
+                    if (!correctlyAnsweredIds.includes(currentQuestion.id)) {
+                        correctlyAnsweredIds.push(currentQuestion.id);
+                        saveProgress();
+                        updateProgressBar();
+                    }
+                } else {
+                    if (selectedOption) selectedOption.classList.add('incorrect-answer');
+                    missedTopics.push(currentQuestion.topic);
+                    document.body.classList.add('incorrect-bg');
+                }
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if(currentQuestionIndex < activeQuiz.length) {
+                        showQuestion();
+                    } else {
+                        showResults();
+                    }
+                }, 2500); 
+            }
+            
+            function showResults() {
+                resetState();
+                quizContainer.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+
+                const percentage = activeQuiz.length > 0 ? Math.round((score / activeQuiz.length) * 100) : 0;
+                document.getElementById('quiz-percentage').textContent = `${percentage}%`;
+                document.getElementById('stat-correct-count').textContent = `✔️ ${score} Acertos`;
+                document.getElementById('stat-incorrect-count').textContent = `❌ ${activeQuiz.length - score} Erros`;
+                
+                const missedListEl = document.getElementById('missed-topics-list');
+                missedListEl.innerHTML = '';
+                
+                if (missedTopics.some(t => t)) {
+                     const uniqueMissedTopics = [...new Set(missedTopics.filter(t => t))];
+                     uniqueMissedTopics.forEach(topicName => {
+                         const targetCard = Array.from(document.querySelectorAll('.topic-card .summary'))
+                             .find(s => s.textContent.trim() === topicName)?.parentElement;
+
+                         if (targetCard) {
+                             const bubble = document.createElement('li');
+                             bubble.textContent = topicName;
+                             bubble.classList.add('missed-topic-bubble');
+
+                             bubble.addEventListener('click', (e) => {
+                                 e.currentTarget.classList.add('visited-topic');
+                                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                 if (!targetCard.classList.contains('is-open')) toggleAccordion(targetCard);
+                             });
+                             missedListEl.appendChild(bubble);
+                         }
+                     });
+                } else if (activeQuiz.length > 0 && score === activeQuiz.length) {
+                     const congrats = document.createElement('li');
+                     congrats.textContent = "Parabéns, você acertou tudo!";
+                     congrats.classList.add('text-green-600', 'font-semibold');
+                     missedListEl.appendChild(congrats);
+                }
+            }
+
+            startBtn.addEventListener('click', startQuiz);
+            restartBtn.addEventListener('click', startQuiz);
+
+            loadProgress();
+        });
+    </script>
+</body>
+</html>
