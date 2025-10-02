@@ -1364,16 +1364,15 @@
                 else if (questionData.difficulty === 'Média') questionCounterDisplay.classList.add('media-bg');
                 else if (questionData.difficulty === 'Difícil') questionCounterDisplay.classList.add('dificil-bg');
 
-                if (questionData.isGraphic) {
-                    const topicId = `topic-${questionData.topic.toLowerCase().replace(/:/g, '').replace(/ /g, '-')}`;
-                    const topicCard = document.getElementById(topicId);
-                    if(topicCard){
-                        const imageElement = topicCard.querySelector(`img[src*="${questionData.imageName}"]`); 
-                        if (imageElement) {
-                            const clonedImage = imageElement.cloneNode(true);
-                            clonedImage.className = 'quiz-question-image mx-auto mb-6 bg-white/40 rounded-lg p-2 max-w-[400px]';
-                            questionEl.parentNode.insertBefore(clonedImage, questionEl);
-                        }
+                if (questionData.isGraphic && questionData.imageName) {
+                    // Search the entire document for an image with the exact matching src.
+                    const imageElement = document.querySelector(`img[src="${questionData.imageName}"]`);
+                    if (imageElement) {
+                        const clonedImage = imageElement.cloneNode(true);
+                        clonedImage.className = 'quiz-question-image mx-auto mb-6 bg-white/40 rounded-lg p-2 max-w-[400px]';
+                        questionEl.parentNode.insertBefore(clonedImage, questionEl);
+                    } else {
+                        console.error("Image not found for question:", questionData.question, "Image name:", questionData.imageName);
                     }
                 }
 
