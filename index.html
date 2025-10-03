@@ -13,7 +13,7 @@
             /* == Theme Colors for Carbohydrates == */
             --monossacarideo-color: #22c55e;      /* Green for Monosaccharides */
             --dissacarideo-color: #f97316;     /* Orange for Disaccharides */
-            --polissacarideo-color: #3b82f6;         /* Blue for Polysaccharides */
+            --polissacarideo-color: #3b82f6;        /* Blue for Polysaccharides */
 
             /* Glow/Highlight Colors for light theme */
             --monossacarideo-glow: rgba(34, 197, 94, 0.2);
@@ -794,7 +794,7 @@
                         <ul>
                             <li><strong>Fonte de Energia:</strong> São a principal fonte de energia metabólica e são armazenados para uso futuro (ex: glicogênio em animais, amido em plantas).</li>
                             <li><strong>Estrutural:</strong> Formam componentes essenciais como a <span class="term" data-description="Um polissacarídeo estrutural que compõe a parede celular das plantas, dando-lhes rigidez.">celulose</span> nas plantas e a quitina em fungos.</li>
-                             <li><strong>Componentes de Ácidos Nucleicos:</strong> A ribose e a desoxirribose são açúcares que formam o esqueleto do RNA e DNA, respectivamente.</li>
+                            <li><strong>Componentes de Ácidos Nucleicos:</strong> A ribose e a desoxirribose são açúcares que formam o esqueleto do RNA e DNA, respectivamente.</li>
                             <li><strong>Sinalização Celular:</strong> Ligam-se a proteínas e lipídios para formar <span class="term" data-description="Moléculas compostas por carboidratos ligados a proteínas (glicoproteínas) ou lipídios (glicolipídios), que atuam como marcadores na superfície celular para reconhecimento e comunicação.">glicoconjugados</span>, importantes para o reconhecimento celular.</li>
                         </ul>
                     </div>
@@ -881,7 +881,7 @@
                             <li>Na <strong>β-D-Glicose</strong>, a hidroxila (-OH) está na mesma posição (cis) que o grupo -CH₂OH.</li>
                         </ul>
                          <div class="image-bubble" data-img-svg="false" data-img-description="Anômeros são isômeros que diferem na configuração do carbono anomérico (o C1 em aldoses), que é formado durante a ciclização. Na α-D-Glicopiranose, a hidroxila (OH) do C1 está para baixo (trans em relação ao CH₂OH). Na β-D-Glicopiranose, ela está para cima (cis em relação ao CH₂OH).">
-                            <img src="alpha-beta.png" alt="Comparação entre anômeros Alfa e Beta da Glicose" />
+                             <img src="alpha-beta.png" alt="Comparação entre anômeros Alfa e Beta da Glicose" />
                         </div>
                     </div>
                 </div>
@@ -915,8 +915,8 @@
                         Dissacarídeos são formados por duas unidades de monossacarídeos.
                         <ul>
                             <li><strong>Maltose:</strong> Formada por duas unidades de D-Glicose unidas por uma ligação <span class="term" data-description="Ligação entre o carbono 1 (em configuração alfa) da primeira glicose e o carbono 4 da segunda glicose.">α(1→4)</span>. É o açúcar do malte.</li>
-                             <li><strong>Sacarose:</strong> Formada por Glicose + Frutose. É o açúcar de mesa comum.</li>
-                              <li><strong>Lactose:</strong> Formada por Galactose + Glicose. É o açúcar do leite.</li>
+                            <li><strong>Sacarose:</strong> Formada por Glicose + Frutose. É o açúcar de mesa comum.</li>
+                            <li><strong>Lactose:</strong> Formada por Galactose + Glicose. É o açúcar do leite.</li>
                         </ul>
                         <div class="image-bubble" data-img-svg="false" data-img-description="A Maltose é um dissacarídeo formado pela união de duas moléculas de D-Glicose através de uma ligação glicosídica do tipo α(1→4). Essa ligação ocorre entre o carbono 1 da primeira glicose e o carbono 4 da segunda, com a liberação de uma molécula de água.">
                            <img src="ligacao-glicosidica.png" alt="Formação da Maltose a partir de duas moléculas de Glicose" />
@@ -1116,8 +1116,8 @@
                     modalImageContainer.innerHTML = ''; // Limpa conteúdo anterior
 
                     if (isSvg) {
-                       const svgElement = bubble.querySelector('svg');
-                       if (svgElement) modalImageContainer.innerHTML = svgElement.outerHTML;
+                        const svgElement = bubble.querySelector('svg');
+                        if (svgElement) modalImageContainer.innerHTML = svgElement.outerHTML;
                     } else {
                         const imgElement = bubble.querySelector('img');
                         if (imgElement) {
@@ -1191,7 +1191,7 @@
                 { id: 10, difficulty: 'Fácil', isGraphic: true, question: "A Maltose (molécula final) é formada pela união de quantas moléculas de Glicose?", topic: "Dissacarídeos Comuns", options: ["1", "2", "3", "4"], correctAnswer: 1, imageName: "ligacao-glicosidica.png" },
                 { id: 11, difficulty: 'Média', isGraphic: true, question: "Na imagem 'aldose-cetose.png', por que o D-Gliceraldeído é classificado como uma 'aldotriose'?", topic: "Aldoses e Cetoses", options: ["Porque tem 3 hidroxilas", "Porque tem um grupo aldeído e 3 carbonos", "Porque tem um grupo cetona e 3 carbonos", "Porque forma um anel de 3 membros"], correctAnswer: 1, imageName: "aldose-cetose.png" },
                 { id: 12, difficulty: 'Média', isGraphic: true, question: "Na imagem da Glicose, a forma cíclica é criada pela reação do Carbono 1 com a hidroxila de qual outro carbono?", topic: "Linear vs. Cíclica", options: ["C2", "C4", "C5", "C6"], correctAnswer: 2, imageName: "glicose.png" },
-                { id: 13, difficulty: 'Média', isGraphic: true, question: "Observando a imagem 'epimero.png', qual das três moléculas não é um epímero das outras duas?", topic: "Isomeria: Epímeros", options: ["D-Manose", "D-Glicose", "D-Galactose", "Todas são epímeras entre si"], correctAnswer: 3 },
+                { id: 13, difficulty: 'Média', isGraphic: true, question: "Observando a imagem, qual das três moléculas não é um epímero das outras duas?", topic: "Isomeria: Epímeros", options: ["D-Manose", "D-Glicose", "D-Galactose", "Todas são epímeras entre si"], correctAnswer: 3, imageName: "epimero.png" },
                 { id: 14, difficulty: 'Média', isGraphic: true, question: "Na imagem 'alpha-beta.png', o que o 'D' em α-D-Glicopiranose significa?", topic: "Isomeria: Anômeros (α e β)", options: ["Que a molécula desvia a luz para a direita", "Que é um dissacarídeo", "A configuração do centro quiral mais distante da carbonila", "Que tem 6 carbonos"], correctAnswer: 2, imageName: "alpha-beta.png" },
                 { id: 15, difficulty: 'Média', isGraphic: true, question: "A ligação formada na imagem 'ligacao-glicosidica.png' é do tipo α(1→4). O que o '4' representa?", topic: "Dissacarídeos Comuns", options: ["O 4º monossacarídeo da cadeia", "O carbono 4 da primeira glicose", "O carbono 4 da segunda glicose", "Que 4 moléculas de água são formadas"], correctAnswer: 2, imageName: "ligacao-glicosidica.png" },
                 { id: 16, difficulty: 'Média', isGraphic: true, question: "A posição do grupo C=O na Diidroxiacetona (cetose) está em qual carbono?", topic: "Aldoses e Cetoses", options: ["C1", "C2", "C3", "Não tem C=O"], correctAnswer: 1, imageName: "aldose-cetose.png" },
